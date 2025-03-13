@@ -1,5 +1,11 @@
+#!/usr/bin/env python3
+
 import subprocess
 import datetime
+import os 
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_PATH = os.path.join(PROJECT_ROOT, "email_template.rtf")
 
 def get_next_monday():
     today = datetime.date.today()
@@ -8,7 +14,7 @@ def get_next_monday():
     return next_monday.strftime("%m/%d/%Y")
 
 def generate_email_content(name, company, position):
-    with open("email_template.rtf", "r") as file:
+    with open(TEMPLATE_PATH, "r") as file:
         template = file.read()
     return template.format(name=name, company=company, position=position)
 
