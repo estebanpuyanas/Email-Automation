@@ -14,13 +14,27 @@ def generate_email_content(name, company, position):
 
 def schedule_email(recipient_name, recipient_email, company, position):
     email_body = generate_email_content(recipient_name, company, position)
+    next_monday = get_next_monday()
 
     apple_script = f'''
     tell application "Mail"
         set newMessage to make new outgoing message with properties {{subject:"Interest in {position} at {company}", content:"{email_body}", visible:true}}
         tell newMessage
             make new to recipient at end of to recipients with properties {{address:"{recipient_email}"}}
-            send
+            activate
+            delay 1
+            tell application "System Events"
+                keystroke "d" using {{command down}}
+                delay 1
+                key code 125 -- arrow down to select "Send Later"
+                delay 0.5
+                key code 36 -- press enter
+                delay 0.5
+                keystroke "{next_monday}"
+                key code 48 -- tab to time field
+                keystroke "08:00AM"
+                key code 36 -- press enter to confirm
+            end tell
         end tell
     end tell
     '''
@@ -28,18 +42,13 @@ def schedule_email(recipient_name, recipient_email, company, position):
     subprocess.run(["osascript", "-e", apple_script])
 
 def main():
-    while True:
-        recipient_name = input("Enter recipient's name: ")
-        recipient_email = input("Enter recipient's email: ")
-        company = input("Enter company name: ")
-        position = input("Enter position title: ")
+    recipient_name = input("Enter recipient's name: ")
+    recipient_email = input("Enter recipient's email: ")
+    company = input("Enter company name: ")
+    position = input("Enter position title: ")
 
-        schedule_email(recipient_name, recipient_email, company, position)
-
-        repeat = input("Do you want to send another email? (y/n): ").strip().lower()
-        if repeat != 'yes':
-            print("Program terminated.")
-            break
+    schedule_email(recipient_name, recipient_email, company, position)
+    print(f"Email to {recipient_name} at {recipient_email} scheduled for next Monday at 8 AM.")
 
 if __name__ == "__main__":
     main()
