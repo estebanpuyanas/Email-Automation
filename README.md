@@ -12,6 +12,24 @@ Afterwards, go over to the `email-automation.code-workspace` file, and depending
 "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe", // For Windows
 ```
 
+Then run the following commands in terminal to make the program executable as a command
+
+```
+1. mkdir -p ~/bin
+
+2. ln -s ~/Desktop/projects/Email-Automation/src/email_automation_script.py ~/bin/send-email
+
+3. nano ~/.zshrc
+
+4. source ~/.zshrc
+
+5. export PATH="$HOME/bin:$PATH"
+
+6. chmod +x ~/bin/send_email.py
+```
+
+Now, when you type send-email in the terminal, the application will run
+
 Additionally, since the script uses Apple's System Events application to simulate keystrokes to enable email scheduling, you will need to ensure that System Events has accessibility enabled, to do this go to `System Settings` and navigate to: `Privacy & Security > Accessibility` click on the `+` to grant a new entity access and then navigate to the `Macintosh HD` folder and then locate the System Events application by doing the following: `System > Library > CoreSerivces > System Events`, once you have granted access you should be good to go!
 
 The script works in a very simple manner. It first finds the next Monday by using Python's `datetime` package. I do this because I like to schedule networking emails to be sent at Monday 8 AM, so when the receiver goes into the office, my email will be one of the first things they see in their inbox.
