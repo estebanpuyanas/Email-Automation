@@ -23,10 +23,10 @@ def generate_email_content(name, company, position):
 def schedule_email(recipient_name, recipient_email, company, position):
     email_body = generate_email_content(recipient_name, company, position).replace('"', '\\"').replace("\n", "\\n")
 
-    sender_email  = "puyanasalazar.e@northeastern.edu"
+    sender_email = "puyanasalazar.e@northeastern.edu"
     next_monday = get_next_monday()
-    is_tomorrow = (next_monday - datetime.date.today()).days == 1
-
+    next_monday_formatted = next_monday.strftime("%m/%d/%Y")  # Format date as MM/DD/YYYY
+    
     apple_script = f'''
     tell application "Mail"
         set theSender to "{sender_email}"
@@ -34,26 +34,50 @@ def schedule_email(recipient_name, recipient_email, company, position):
         tell newMessage
             make new to recipient at end of to recipients with properties {{address:"{recipient_email}"}}
             set sender to theSender
-            delay 0.5
         end tell
-        activate
     end tell
 
     tell application "System Events"
         tell process "Mail"
-            click button 1 of window 1
-            delay 0.5
-            -- If next Monday is tomorrow, choose "Send Tomorrow at 8:00 AM"
-            if {str(is_tomorrow).lower()} then
-                click menu item 2 of menu 1 of button 1 of window 1
-            else
-                click menu item 3 of menu 1 of button 1 of window 1
+            set frontmost to true
+            tell window "Interest in {position} at {company}"
+                click pop up button "Signature:"
                 delay 0.5
-                -- Fill in date and time for the next Monday at 8:00 AM
-                set value of text field 1 of window 1 to "{next_monday.strftime('%m/%d/%Y')}"
-                set value of text field 2 of window 1 to "8:00 AM"
-                click button "Send" of window 1
-            end if
+                click menu item "Northeastern" of menu of pop up button "Signature:"
+                
+                -- Wait for UI to update
+                delay 1
+            end tell
+            
+            -- Ensure the window is focused
+            set frontmost to true
+            delay 0.5
+            
+            -- Directly click the "Message" menu and "Send Later..." option
+            tell menu bar 1
+                tell menu bar item "Message"
+                    click
+                    delay 0.5
+                    tell menu 1
+                        try
+                            click menu item "Send Later..."
+                        on error
+                            log "Failed to find 'Send Later...' menu item"
+                        end try
+                    end tell
+                end tell
+            end tell
+            delay 1
+            
+            -- Fill out the scheduling dialog
+            tell sheet 1 of window "Interest in {position} at {company}"
+                repeat until exists text field 1
+                    delay 0.2
+                end repeat
+                set value of text field 1 to "{next_monday_formatted}"
+                set value of text field 2 to "8:00 AM"
+                click button "Schedule"
+            end tell
         end tell
     end tell
     '''
@@ -77,3 +101,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
