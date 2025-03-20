@@ -1,2 +1,5 @@
 # No .venv files
 .venv
+
+# No applescript dumps/compilations/whatever
+*.scpt

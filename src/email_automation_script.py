@@ -40,48 +40,48 @@ def schedule_email(recipient_name, recipient_email, company, position):
     tell application "System Events"
         tell process "Mail"
             set frontmost to true
-            tell window "Interest in {position} at {company}"
+            
+            -- Ensure the message window is active
+            set targetWindow to front window
+            
+            -- Set the signature
+            tell targetWindow
                 click pop up button "Signature:"
                 delay 0.5
                 click menu item "Northeastern" of menu of pop up button "Signature:"
-                
-                -- Wait for UI to update
                 delay 1
             end tell
+
+            -- Navigate through the UI to find the "Send Later" button
+            set toolbarView to first toolbar of targetWindow
+            set toolbarItemViewer to first group of toolbarView
+            set sendGroup to last group of toolbarItemViewer
             
-            -- Ensure the window is focused
-            set frontmost to true
+            -- Find and click the schedule button (last menu button in the send group)
+            set scheduleButton to last menu button of sendGroup
+            click scheduleButton
             delay 0.5
             
-            -- Directly click the "Message" menu and "Send Later..." option
-            tell menu bar 1
-                tell menu bar item "Message"
-                    click
-                    delay 0.5
-                    tell menu 1
-                        try
-                            click menu item "Send Later..."
-                        on error
-                            log "Failed to find 'Send Later...' menu item"
-                        end try
-                    end tell
-                end tell
-            end tell
-            delay 1
-            
-            -- Fill out the scheduling dialog
-            tell sheet 1 of window "Interest in {position} at {company}"
-                repeat until exists text field 1
-                    delay 0.2
-                end repeat
-                set value of text field 1 to "{next_monday_formatted}"
-                set value of text field 2 to "8:00 AM"
-                click button "Schedule"
-            end tell
+            -- Select "Send Later..." from the dropdown menu
+            try
+                click menu item "Send Later..." of menu 1 of scheduleButton
+            on error
+                try
+                    click menu item "Send Later…" of menu 1 of scheduleButton
+                on error
+                    try
+                        -- If the exact match fails, try to find a menu item containing "Send Later"
+                        set laterItem to (first menu item of menu 1 of scheduleButton whose name contains "Send Later")
+                        click laterItem
+                    on error
+                        display dialog "Could not find 'Send Later...' option. Please check the script." buttons {"OK"} default button "OK"
+                    end try
+                end try
+            end try
         end tell
     end tell
     '''
-
+    
     subprocess.run(["osascript", "-e", apple_script])
 
 def main():
