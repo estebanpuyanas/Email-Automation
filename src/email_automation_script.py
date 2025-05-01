@@ -97,14 +97,12 @@ def schedule_email(recipient_name, recipient_email, company, position):
 
             -- —— NEW: break date+time into cells ——
             delay 0.5
-            -- date: month → day → year
             keystroke "{month}"
             keystroke tab
             keystroke "{day}"
             keystroke tab
             keystroke "{year}"
             
-            -- time: hour → minute → AM/PM
             keystroke tab
             keystroke "{hour}"
             keystroke tab

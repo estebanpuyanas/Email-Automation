@@ -4,5 +4,8 @@
 # No applescript dumps/compilations/whatever
 *.scpt
 
+# Environment variables
+.env
+
 # Apple DS_Store
 .DS_Store
