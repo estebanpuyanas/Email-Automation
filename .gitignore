@@ -3,3 +3,6 @@
 
 # No applescript dumps/compilations/whatever
 *.scpt
+
+# Apple DS_Store
+.DS_Store
