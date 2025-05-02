@@ -9,7 +9,25 @@ import logging
 # Configure basic logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-TEMPLATE_PATH = os.path.expanduser("~/Desktop/projects/Email-Automation/email-template.txt")
+def _load_env():
+    here = os.path.dirname(os.path.realpath(__file__))
+    env_file = os.path.join(here, ".env")
+    if not os.path.isfile(env_file):
+        return
+    for line in open(env_file):
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, val = line.split("=", 1)
+        val = val.strip().strip('"').strip("'")
+        os.environ.setdefault(key, val)
+
+_load_env()
+
+# Pull everything from the .env now
+TEMPLATE_PATH = os.getenv("TEMPLATE_PATH")
+SENDER_EMAIL  = os.getenv("SENDER_EMAIL")
+SIGNATURE     = os.getenv("SIGNATURE")
 
 def get_next_monday():
     today = datetime.date.today()
@@ -30,8 +48,6 @@ def schedule_email(recipient_name, recipient_email, company, position):
                     .replace('"', '\\"')\
                     .replace("\n", "\\n")
 
-    sender_email = "puyanasalazar.e@northeastern.edu"
-
     # split date into month, day, year
     next_monday = get_next_monday()
     month = next_monday.strftime("%-m")
@@ -43,9 +59,10 @@ def schedule_email(recipient_name, recipient_email, company, position):
     minute = "00"
     ampm   = "AM"
 
+    # Use the env-loaded values here
     apple_script = f'''
     tell application "Mail"
-        set theSender to "{sender_email}"
+        set theSender to "{SENDER_EMAIL}"
         set newMessage to make new outgoing message with properties {{subject:"Interest in {position} at {company}", content:"{email_body}", visible:true}}
 
         tell newMessage
@@ -61,11 +78,11 @@ def schedule_email(recipient_name, recipient_email, company, position):
             -- Ensure the message window is active
             set targetWindow to front window
             
-            -- Set the signature
+            -- Set the signature from your .env
             tell targetWindow
                 click pop up button "Signature:"
                 delay 0.5
-                click menu item "Northeastern" of menu of pop up button "Signature:"
+                click menu item "{SIGNATURE}" of menu of pop up button "Signature:"
                 delay 1
             end tell
 
@@ -95,7 +112,7 @@ def schedule_email(recipient_name, recipient_email, company, position):
                 end try
             end try
 
-            -- —— NEW: break date+time into cells ——
+            -- Input the scheduled date/time
             delay 0.5
             keystroke "{month}"
             keystroke tab

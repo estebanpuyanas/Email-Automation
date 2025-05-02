@@ -5,14 +5,24 @@ This is a simple Python Script I wrote to automate email writing, scheduling, an
 To run the program, first create a virtual enviornment by running the following command in the command line terminal:
 `python3 -m venv .venv`
 
-Afterwards, go over to the `email-automation.code-workspace` file, and depending which machine you're working on (either MacOS/Linux or Windows), comment out the line that is **not** your machine OS:
-
-```
-"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python", // For macOS/Linux
-"python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe", // For Windows
-```
-
 Then run the following commands in terminal to make the program executable as a command
+
+## Quick Start
+
+1. **Make your script executable**
+
+   ```
+   chmod +x src/email_automation_script.py
+   mkdir -p ~/bin
+   ln -sf "$(pwd)/src/email_automation_script.py" ~/bin/send-email
+     # (Only need to do this once)
+   echo 'export PATH="$HOME/bin:$PATH"' >> ~/.zshrc
+   source ~/.zshrc
+   TEMPLATE_PATH="/full/absolute/path/to/email-template.txt"
+   SENDER_EMAIL="your@address"
+   SIGNATURE="YourSignatureName"
+   send-email
+   ```
 
 ```
 1. mkdir -p ~/bin
