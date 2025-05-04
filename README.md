@@ -1,41 +1,44 @@
 # Email-Automation
 
-This is a simple Python Script I wrote to automate email writing, scheduling, and sending. I decided to do this to automate and simplify a crucial point of the job application process: sending networking emails to recruiters/managers/current employees in the companies I am applying to.
+This repository contains a simple Python script to automate templated email writing, scheduling, and sending for Apple's MailOS.
 
-To run the program, first create a virtual enviornment by running the following command in the command line terminal:
-`python3 -m venv .venv`
+## Motivation
 
-Then run the following commands in terminal to make the program executable as a command
+Throughout this past year (2024-2025) as I have been applying to internships and research positions I have found that there is a tedious and repetitive task I always do alongside applying to jobs: sending networking emails. My networking emails usually follow a similar template so I thought that rather than `cmd + a, cmd + c, cmd + v` the template manually every time, I can write a Python script that asks me for the information that changes between emails: the person I am addressing, the company, and the position I am applying for. This way, I can simply open up my terminal, run the command `send-email` and the script will ask me to provide the necessary information and then paste the email in and schedule to send it at my desired time (I like Mondays 8 AM). Let's talk about how to get this script working for you.
 
 ## Quick Start
 
-1. **Make your script executable**
+first clone the repo from [this link](https://github.com/estebanpuyanas/Email-Automation) by using the Git CLI, IDE extension, or other favorite tool.
 
-   ```
-   chmod +x src/email_automation_script.py
-   mkdir -p ~/bin
-   ln -sf "$(pwd)/src/email_automation_script.py" ~/bin/send-email
-     # (Only need to do this once)
-   echo 'export PATH="$HOME/bin:$PATH"' >> ~/.zshrc
-   source ~/.zshrc
-   TEMPLATE_PATH="/full/absolute/path/to/email-template.txt"
-   SENDER_EMAIL="your@address"
-   SIGNATURE="YourSignatureName"
-   send-email
-   ```
+1. Now create a virtual enviornment by running the following command in the command line terminal: `python3 -m venv .venv`
+
+2. Copy the `.env.template` in the `./src/` folder of the project, move it to the project root and rename it to `.env`, then replace the template path, sender, email, and signature to match the account you want to send the emails from. To find the exact template path needed in the `.env`, open Finder > navigate to the project location > select `email-template.txt` file > click the tab at the bottom of the Finder window and select `copy email-template as pathname` and paste that in the `.env TEMPLATE_PATH` field. The `SENDER_EMAIL, SIGNATURE` fields should match the exact format and casing used to set the account/signature up in MailOS, this information can be accessed by running `cmd + ,` inside the MailOS app.
+   ![image](assets/finder-tab.png)
+
+3. Since we created a `venv` for the project, but we want the script to be globally executable from any terminal in the computer, we need to create a symbolic link from the project root to the `./src/` with another `.env` file, this way, when the script executes it will link the `.env` inside of `src` to the one in the project root, making it globally executable and not only `venv` executable.
 
 ```
-1. mkdir -p ~/bin
+cd src
+ln -sf ../.env .env
+cd ..
+```
 
-2. ln -s ~/Desktop/projects/Email-Automation/src/email_automation_script.py ~/bin/send-email
+Note: As I am no bash/shell expert, this is the most elegant solution I was able to come up with to this problem, which originated from the desire to have a `.env` file instead of harcoding secrets like the account name and path, wihtout thius symlink, the terminal produces the following error when running the `send-email` command:
+`ModuleNotFoundError: No module named 'email_automation_script'`
+If anyone using this repo finds a more elegant solution and/or has suggestions on how to improve this, please feel free to open an issue or a pull request.
 
-3. nano ~/.zshrc
+Now, run the following commands in the terminal to make the script a binary executable file (allowing us to run it as the `send-email` command).
 
-4. source ~/.zshrc
+3. Commands:
 
-5. export PATH="$HOME/bin:$PATH"
-
-6. chmod +x ~/bin/send_email.py
+```
+bash:
+1. chmod +x src/email_automation_script.py (makes the .py file executable).
+2. mkdir -p ~/bin (creates ./bin folder if not exists).
+3. ln -sf "$(pwd)/src/email_automation_script.py" ~/bin/send-email (Only do this once to symbolically link the script as send-email)
+(Add./bin to the shell's PATH)
+4. echo 'export PATH="$HOME/bin:$PATH"' >> ~/.zshrc
+5. source ~/.zshrc
 ```
 
 Now, when you type send-email in the terminal, the application will run
