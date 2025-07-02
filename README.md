@@ -1,4 +1,5 @@
 # Email-Automation
+# NOTE: THIS REPOSITORY IS BEING ARCHIVED. Starting Fall (August/September 2025) I will be moving away from Apple Mac computers and into a Linux-based computer. As a result, I will no longer be actively maintaining or developing this repositry any further to perfect it. The current state is a very good solution that accomplishes what I initially sought out to automate when I first developed the script. 
 
 This repository contains a simple Python script to automate templated email writing, scheduling, and sending for Apple's MailOS.
 
